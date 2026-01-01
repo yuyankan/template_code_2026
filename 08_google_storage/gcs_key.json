@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "avy-apac-material-digital-data",
+  "private_key_id": "ef00016365d0cc0f6856d6e30589b2f3881ee455",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCbX34G3eGqUzHS\nnHhYswCTCNmvg6M0c7gi5XH2r52HVfZb74H2b81fpLPwv0dTC8jv502Z5saYXGvs\nVqVA0GSBTu9zjbLrWZavv0TQyvUPc3E4LtZyp/B0W3TmTBwSVUoN5E7g0JffS/87\nsM25i5jKN47ubXo3y1U6ifpUb/l3Mw+O+d9vlhB/fWEXhNXMiAbhMwPwf7dEoAn7\nwL04+pSMJUJZDqRink7oRdeJiUMVp9EpPFX5lsoXN47RIGJuK6+t/pHIwY/VA8Pf\nDZqHNCMjSRrvyVcbZOM56695qxS7Qa6UKl1OIW/NfTR7girtFA4kxVk+VTSNIVTE\nLgDZ8PiPAgMBAAECggEASAQAbZ1dci2Ci9yzmWVKsFwrTgNlW7QBVsdjxdQLX4XU\nHTPL2NZkal70enOmUxNEzRG4ccu6JDe+XDqi+QI+e4MDUNuOYTDSu94bPu27nbBD\n+6cWBenadYxIiFAhuMuoefznJKP6qOjYQioGiOhv5tbOnKvIuOC5vdrjWUzXY8xg\n9H19Z7nE1IDbJiLupstEkKZE7YkefG/gwotvLCchHxFmatk1XmPIuYI2zXPbpt6T\nll++iW2BHqCV5YBynDsMsaZaXxjJg6O0B/4Djnd0V7sStUwheqlq5Ba+j0MbQq72\nP7duJpyell/tRLSP0PwUaDov4LOo5YDMWWmTUOmFfQKBgQDYy1X+teH2iKcGZb6c\neFA1ZlHWxvJdDUMDTfFk6Jl0nvyo4bSr1TKMVNoF0f5NyFiqHjrPTcUDynVTLXUa\nUc7c+WGdUsBWYrMOJUS+iK9XzDnODD0rExvOFttlYKlbyXz6TQWLXeeVMGfx4gxL\nmkAGhX5sgTaKDCbWBOjUsD+jjQKBgQC3eJwnpD3C1EyxYWVM3t+Ou/8gmTRSyoXC\nUtdVHW+5ISXoMLO8PV2+ekPxCV+FiscnK3l+RHahTCicYO62w2QzuNSpNRk5pSx+\nw4Fjkqd5sCK59aOAWyvlv6ryWqBnqHe9chKFTmBiFBA1+U3r2cnGOudn5EhJ+Ryg\nxHh8bVeXiwKBgBzqOeUIE0RTg5t51IuADIqixAWWcVrx2t9E9Q5Va6o/TkmkGPnW\nLLDE3HNsR7POJe1CrOtbXwybYzyd0oGZKbMVW+ykzdx3u5QGan3TMzfNmGQgA8SL\n/uhk6gxCcTQ50n576WJmOu4OD78WPDeVMjbsdSk5rrGI32EqNHexrjs9AoGAToX3\nR1wa9tTIEi7eHT1SLxO1CK2pYDm/b8Dm2k3j8DcIs0yM0GbvRUOs6m+Zi10vCUup\nDuqcX0JqKyutX1lW/HABzH2mUy6nUYW5TfWJaiKBaleAZ8IdkpIqxtkUx+ipftJg\nrN8zjyaJHaCawfOPUSEKw0NH0SkmIISWEKL3lysCgYEAog7+gn9rZLw7GcmPj+NM\nyfVfkL7trvbtWo952utAuK533J9d3X4Z54syi04DOfzxaLAqv8rAB5MAxdj2chrt\n+y7hTXtWrJkp58Lk4N3+YVNgrOy70QcpDDo/eOsWxgoz6R7w8SlQNnnuSnxqpah8\nzRDmRcPEnm4EBw7KWpD90M4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "admin-storage@avy-apac-material-digital-data.iam.gserviceaccount.com",
+  "client_id": "117669683716811460334",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/admin-storage%40avy-apac-material-digital-data.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
