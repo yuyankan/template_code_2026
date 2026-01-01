@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCS临时图片查看器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36BFFA',
+                        neutral: '#64748B',
+                        light: '#F1F5F9',
+                        dark: '#1E293B'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .image-skeleton {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: loading 1.5s infinite;
+            }
+            @keyframes loading {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark min-h-screen">
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-cloud text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-primary">GCS临时图片查看器</h1>
+            </div>
+            <div class="text-sm text-neutral">
+                <span id="expiration-info" class="hidden">链接有效期: <span id="expires-in">15分钟</span></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- 说明区域 -->
+        <div class="bg-blue-50 border-l-4 border-primary p-4 mb-8 rounded">
+            <h2 class="font-semibold text-primary flex items-center">
+                <i class="fa fa-info-circle mr-2"></i>使用说明
+            </h2>
+            <p class="text-neutral mt-2">点击下方图片链接获取临时访问地址，系统会从GCS加载图片并显示。临时链接有效期为15分钟。</p>
+        </div>
+
+        <!-- 图片链接列表 -->
+        <section class="mb-12">
+            <h2 class="text-lg font-semibold mb-4 flex items-center">
+                <i class="fa fa-list-alt text-primary mr-2"></i>图片列表
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- 图片链接项 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium">产品检测图1</h3>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">可用</span>
+                    </div>
+                    <p class="text-sm text-neutral mb-3">生产线A-20230818-001.jpg</p>
+                    <button onclick="fetchImage('product-1', 'production-line-a/20230818/001.jpg')" 
+                            class="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded text-sm transition-colors flex items-center justify-center">
+                        <i class="fa fa-link mr-1"></i> 获取临时链接并查看
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium">产品检测图2</h3>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">可用</span>
+                    </div>
+                    <p class="text-sm text-neutral mb-3">生产线B-20230818-002.jpg</p>
+                    <button onclick="fetchImage('product-2', 'production-line-b/20230818/002.jpg')" 
+                            class="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded text-sm transition-colors flex items-center justify-center">
+                        <i class="fa fa-link mr-1"></i> 获取临时链接并查看
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium">产品检测图3</h3>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">可用</span>
+                    </div>
+                    <p class="text-sm text-neutral mb-3">生产线C-20230818-003.jpg</p>
+                    <button onclick="fetchImage('product-3', 'production-line-c/20230818/003.jpg')" 
+                            class="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded text-sm transition-colors flex items-center justify-center">
+                        <i class="fa fa-link mr-1"></i> 获取临时链接并查看
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 图片预览区域 -->
+        <section id="image-preview-section" class="hidden">
+            <h2 class="text-lg font-semibold mb-4 flex items-center">
+                <i class="fa fa-image text-primary mr-2"></i>图片预览
+                <span id="current-image-name" class="ml-2 text-sm text-neutral font-normal"></span>
+            </h2>
+            
+            <!-- 加载状态 -->
+            <div id="loading-state" class="hidden mb-4">
+                <div class="flex items-center text-neutral">
+                    <i class="fa fa-spinner fa-spin mr-2"></i>
+                    <span>正在获取临时链接并加载图片...</span>
+                </div>
+            </div>
+            
+            <!-- 错误状态 -->
+            <div id="error-state" class="hidden mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                <div class="flex">
+                    <i class="fa fa-exclamation-circle mt-1 mr-3"></i>
+                    <div>
+                        <p id="error-message">加载图片时发生错误，请重试</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图片容器 - 预留区域 -->
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                <div id="image-container" class="flex justify-center items-center min-h-[300px]">
+                    <!-- 图片骨架屏 - 初始状态 -->
+                    <div class="image-skeleton w-full max-w-2xl h-[300px] rounded"></div>
+                </div>
+            </div>
+            
+            <!-- 图片信息 -->
+            <div class="bg-light rounded-lg p-4">
+                <h3 class="font-medium mb-2">图片信息</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <div>
+                        <span class="text-neutral">临时链接:</span>
+                        <p id="temp-url" class="break-all text-primary mt-1 font-mono"></p>
+                    </div>
+                    <div>
+                        <span class="text-neutral">过期时间:</span>
+                        <p id="expiration-time" class="mt-1"></p>
+                    </div>
+                </div>
+                <button onclick="copyToClipboard()" class="mt-3 text-sm bg-secondary hover:bg-secondary/90 text-white py-1 px-3 rounded transition-colors">
+                    <i class="fa fa-copy mr-1"></i> 复制链接
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>© 2023 GCS临时图片查看器演示 | 使用Google Cloud Storage服务</p>
+        </div>
+    </footer>
+
+    <script>
+        // 模拟获取GCS临时链接的函数
+        // 实际应用中，这个函数应该调用你的后端API，由后端生成签名URL
+        function getGcsTempUrl(blobName) {
+            // 模拟API请求延迟
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // 这里是模拟的临时URL，实际应用中应该由后端返回真实的签名URL
+                    const mockExpiration = new Date();
+                    mockExpiration.setMinutes(mockExpiration.getMinutes() + 15);
+                    
+                    resolve({
+                        url: `https://storage.googleapis.com/image_bucket_yyk_202506/test/just_test.jpg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=admin-storage%40avy-apac-material-digital-data.iam.gserviceaccount.com%2F20250818%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20250818T054555Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=55676290edd88056e2da2b8d9e4a4da337f1d2828e46ba898c3c15650daaaae386be3f0be5823dcd17032a1ff84c9db2144579f119b6f06e0b3a82b09c6916a7a41a0ba786c0ee305c80ee1863dae5295a295ca4c89f268452fd55625e0d777a5e38df15b1dc7dd220dd9d36b9f2c37a7103c532afe168f3b1612eec0f0e2c853a78916d2f0e5fb2be6a50b52454f4380d6c26cbf5e85bc4f849fbc06479599c832535e8cb3834e71a78db2961db4a495a41ab488b01d87ae22e22c55645a844f90b61dc2bab9a95e080bb1d8fec768c0425466d7dd8539c4fb0b63f16f54063b42575f88e8a1c1c2a82cab5bcbabea051d47d80f68c18b01672e81e8592ca96`,
+                        expiration: mockExpiration
+                    });
+                }, 1000); // 模拟1秒的网络延迟
+            });
+        }
+
+        // 获取图片并显示
+        async function fetchImage(imageId, blobName) {
+            // 显示预览区域和加载状态
+            document.getElementById('image-preview-section').classList.remove('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+            document.getElementById('expiration-info').classList.remove('hidden');
+            document.getElementById('current-image-name').textContent = `(${imageId})`;
+            
+            // 重置图片容器为骨架屏
+            const imageContainer = document.getElementById('image-container');
+            imageContainer.innerHTML = '<div class="image-skeleton w-full max-w-2xl h-[300px] rounded"></div>';
+            
+            try {
+                // 获取临时URL
+                const { url, expiration } = await getGcsTempUrl(blobName);
+                
+                // 隐藏加载状态
+                document.getElementById('loading-state').classList.add('hidden');
+                
+                // 创建图片元素并加载
+                const img = new Image();
+                img.className = 'max-w-full max-h-[600px] rounded shadow-md transition-opacity duration-300';
+                img.alt = `图片 ${imageId}`;
+                
+                // 图片加载完成
+                img.onload = () => {
+                    imageContainer.innerHTML = '';
+                    imageContainer.appendChild(img);
+                    
+                    // 更新信息显示
+                    document.getElementById('temp-url').textContent = url;
+                    document.getElementById('expiration-time').textContent = expiration.toLocaleString();
+                    
+                    // 启动过期倒计时
+                    startExpirationTimer(expiration);
+                };
+                
+                // 图片加载失败
+                img.onerror = () => {
+                    showError('图片加载失败，请尝试再次获取');
+                };
+                
+                // 设置图片源
+                img.src = url;
+                
+            } catch (error) {
+                showError('获取临时链接失败，请重试');
+                console.error('Error:', error);
+            }
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // 复制链接到剪贴板
+        function copyToClipboard() {
+            const url = document.getElementById('temp-url').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('链接已复制到剪贴板');
+            }).catch(err => {
+                console.error('无法复制内容: ', err);
+                alert('复制失败，请手动复制');
+            });
+        }
+
+        // 启动过期倒计时
+        function startExpirationTimer(expirationTime) {
+            const updateTimer = () => {
+                const now = new Date();
+                const diff = expirationTime - now;
+                
+                if (diff <= 0) {
+                    document.getElementById('expires-in').textContent = '已过期';
+                    return;
+                }
+                
+                const minutes = Math.floor(diff / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('expires-in').textContent = `${minutes}分${seconds}秒`;
+            };
+            
+            // 立即更新一次
+            updateTimer();
+            // 每秒更新一次
+            setInterval(updateTimer, 1000);
+        }
+    </script>
+</body>
+</html>
